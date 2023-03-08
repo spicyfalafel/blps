@@ -11,12 +11,17 @@ import java.util.Optional;
 
 @RestController
 public class MedicationController {
-    @Autowired
     private MedicationRepository medicationRepository;
+    @Autowired
+    public void setMedicationRepository(MedicationRepository medicationRepository) {
+        this.medicationRepository = medicationRepository;
+    }
     @GetMapping("/api/medication")
+    public List<Medication> allMedicationsTitleAndId() {
+        return medicationRepository.findAllReturnTitleAndId();
+    }
+    @GetMapping(value = "/api/medication", params = "title")
     public List<Medication> medicationsByTitle(@RequestParam String title) {
-        if (title == null)
-            return (List<Medication>) medicationRepository.findAll();
         return medicationRepository.findByTitle(title);
     }
     @GetMapping("/api/medication/:id")
@@ -24,9 +29,4 @@ public class MedicationController {
         Optional<Medication> m = medicationRepository.findById(id);
         return m.orElse(null);
     }
-
-//    @PostMapping("/api/medication")
-//    public Medication addmedication(@RequestBody Medication medication) {
-//        return medicationRepository.save(medication);
-//    }
 }

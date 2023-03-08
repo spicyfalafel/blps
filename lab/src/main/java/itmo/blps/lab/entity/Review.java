@@ -8,10 +8,10 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 public class Review {
     @Id
-    Long reviewId;
-    private boolean approved;
-    int mark;
-    String name;
-    String email;
-    String review;
+    private Long reviewId;
+    private Boolean approved;
+    private Long mark;
+    private String name;
+    private String email;
+    private String review;
 }

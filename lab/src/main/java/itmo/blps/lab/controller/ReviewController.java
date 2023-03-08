@@ -3,6 +3,7 @@ package itmo.blps.lab.controller;
 import itmo.blps.lab.entity.Medication;
 import itmo.blps.lab.entity.Review;
 import itmo.blps.lab.repository.ReviewRepository;
+import itmo.blps.lab.services.ReviewManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,14 +13,19 @@ import java.util.List;
 public class ReviewController {
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private ReviewManager reviewManager;
     @PostMapping("/api/review")
-    public String reviewToReview(@RequestBody Review review) {
+    public boolean review(@RequestBody Review review) {
         review.setApproved(false);
         reviewRepository.save(review);
-        return "Sent to review. Wait for email.";
-    }
-    @GetMapping("/api/review/approve/:id")
-    public Review approveReview(@PathVariable Long id) {
-        return reviewRepository.approveReview(id);
+        boolean appr = reviewManager.reviewReview(review);
+        if (appr) {
+            review.setApproved(appr);
+            reviewRepository.save(review);
+        } else {
+            reviewRepository.delete(review);
+        }
+        return appr;
     }
 }

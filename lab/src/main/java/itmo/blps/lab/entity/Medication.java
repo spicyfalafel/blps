@@ -5,17 +5,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Table("medication")
 public class Medication {
     @Id
-    private long medicationId;
-
+    private Long medicationId;
     private String title;
     private String description;
+    private String dosage;
+    private String reasonToUse;
+    private String sideEffects;
+    private Boolean byRecipe;
+    private String storageConditions;
     @MappedCollection(idColumn = "medication_id")
     private Set<Review> reviews;
 
