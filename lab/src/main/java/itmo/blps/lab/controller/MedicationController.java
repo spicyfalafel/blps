@@ -24,7 +24,7 @@ public class MedicationController {
     public List<Medication> medicationsByTitle(@RequestParam String title) {
         return medicationRepository.findByTitle(title);
     }
-    @GetMapping("/api/medication/:id")
+    @GetMapping("/api/medication/{id}")
     public Medication medicationById(@PathVariable Long id) {
         Optional<Medication> m = medicationRepository.findById(id);
         return m.orElse(null);

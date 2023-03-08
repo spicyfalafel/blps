@@ -11,10 +11,18 @@ import java.util.List;
 
 @RestController
 public class ReviewController {
-    @Autowired
     private ReviewRepository reviewRepository;
-    @Autowired
     private ReviewManager reviewManager;
+    @Autowired
+    public void setReviewRepository(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
+
+    @Autowired
+    public void setReviewManager(ReviewManager reviewManager) {
+        this.reviewManager = reviewManager;
+    }
+
     @PostMapping("/api/review")
     public boolean review(@RequestBody Review review) {
         review.setApproved(false);
