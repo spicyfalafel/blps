@@ -1,21 +1,21 @@
 package itmo.blps.lab.controller;
 
-import itmo.blps.lab.entity.Medication;
 import itmo.blps.lab.entity.Review;
-import itmo.blps.lab.repository.ReviewRepository;
+import itmo.blps.lab.entity.ReviewAnswer;
+import itmo.blps.lab.repository.review.MyReviewRepository;
 import itmo.blps.lab.services.ReviewManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class ReviewController {
-    private ReviewRepository reviewRepository;
+    private MyReviewRepository myReviewRepository;
     private ReviewManager reviewManager;
     @Autowired
-    public void setReviewRepository(ReviewRepository reviewRepository) {
-        this.reviewRepository = reviewRepository;
+    public void setMyReviewRepository(MyReviewRepository myReviewRepository) {
+        this.myReviewRepository = myReviewRepository;
     }
 
     @Autowired
@@ -23,17 +23,21 @@ public class ReviewController {
         this.reviewManager = reviewManager;
     }
 
-    @PostMapping("/api/review")
-    public boolean review(@RequestBody Review review) {
-        review.setApproved(false);
-        reviewRepository.save(review);
+    @PostMapping("/api/medication/{medicationId}/review")
+    @ResponseBody
+    public ResponseEntity<ReviewAnswer> review(@PathVariable Long medicationId, @RequestBody Review review) {
         boolean appr = reviewManager.reviewReview(review);
+        review.setApproved(appr);
         if (appr) {
-            review.setApproved(appr);
-            reviewRepository.save(review);
+            try {
+                this.myReviewRepository.save(review, medicationId);
+            } catch (Exception e)  {
+                return new ResponseEntity<>(new ReviewAnswer(false, "can't find medication with such id"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(new ReviewAnswer(true, "ok"), HttpStatus.OK);
         } else {
-            reviewRepository.delete(review);
+            return new ResponseEntity<>(new ReviewAnswer(false, "review is not approved"), HttpStatus.BAD_REQUEST);
         }
-        return appr;
     }
 }

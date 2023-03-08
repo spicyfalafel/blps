@@ -1,32 +1,46 @@
 package itmo.blps.lab.controller;
 
 import itmo.blps.lab.entity.Medication;
-import itmo.blps.lab.repository.MedicationRepository;
+import itmo.blps.lab.entity.MedicationIdTitle;
+import itmo.blps.lab.repository.medication.MedicationCRUDRepository;
+import itmo.blps.lab.repository.medication.MyMedicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class MedicationController {
-    private MedicationRepository medicationRepository;
+    private MedicationCRUDRepository medicationCRUDRepository;
+    private MyMedicationRepository myMedicationRepository;
     @Autowired
-    public void setMedicationRepository(MedicationRepository medicationRepository) {
-        this.medicationRepository = medicationRepository;
+    public void setMyMedicationRepository(MyMedicationRepository medicationRepository) {
+        this.myMedicationRepository = medicationRepository;
+    }
+    @Autowired
+    public void setMedicationCRUDRepository(MedicationCRUDRepository medicationCRUDRepository) {
+        this.medicationCRUDRepository = medicationCRUDRepository;
     }
     @GetMapping("/api/medication")
-    public List<Medication> allMedicationsTitleAndId() {
-        return medicationRepository.findAllReturnTitleAndId();
+    public ResponseEntity<List<MedicationIdTitle>> allMedicationsTitleAndId() {
+        List<MedicationIdTitle> lst = medicationCRUDRepository.findAllReturnTitleAndId();
+        if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(lst, HttpStatus.OK);
     }
+
     @GetMapping(value = "/api/medication", params = "title")
-    public List<Medication> medicationsByTitle(@RequestParam String title) {
-        return medicationRepository.findByTitle(title);
+    public ResponseEntity<List<Medication>> medicationsByTitle(@RequestParam String title) {
+        List<Medication> lst = medicationCRUDRepository.findByTitleContainingIgnoreCase(title);
+        if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(lst, HttpStatus.OK);
     }
     @GetMapping("/api/medication/{id}")
-    public Medication medicationById(@PathVariable Long id) {
-        Optional<Medication> m = medicationRepository.findById(id);
-        return m.orElse(null);
+    public ResponseEntity<Medication> medicationById(@PathVariable Long id) {
+        Medication m = myMedicationRepository.getMedicationByIdLimitReviews(id);
+        if (m == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 }
