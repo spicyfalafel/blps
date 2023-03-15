@@ -27,14 +27,12 @@ public class MedicationController {
     @GetMapping("/api/medication")
     public ResponseEntity<List<MedicationIdTitle>> allMedicationsTitleAndId() {
         List<MedicationIdTitle> lst = medicationCRUDRepository.findAllReturnTitleAndId();
-        if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(lst, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/medication", params = "title")
     public ResponseEntity<List<Medication>> medicationsByTitle(@RequestParam String title) {
         List<Medication> lst = medicationCRUDRepository.findByTitleContainingIgnoreCase(title);
-        if (lst.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(lst, HttpStatus.OK);
     }
     @GetMapping("/api/medication/{id}")

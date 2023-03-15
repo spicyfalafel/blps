@@ -12,6 +12,5 @@ import java.util.List;
 public interface MedicationCRUDRepository extends CrudRepository<Medication, Long> {
     @Query("select medication_id, title from medication")
     List<MedicationIdTitle> findAllReturnTitleAndId();
-//    @Query("select * from medication where title ilike '%'::text + (:title::text) + '%'::text")
     List<Medication> findByTitleContainingIgnoreCase(String title);
 }
