@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class MyReviewRepository implements ReviewRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MyReviewRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -22,6 +22,13 @@ public class MyReviewRepository implements ReviewRepository {
                 review.getEmail(),
                 review.getReview(),
                 medicationId)
+                == 1;
+    }
+
+    @Override
+    public boolean deleteByIdAndMedicationId(Long medicationId, Long reviewId) {
+    return jdbcTemplate.update( "delete from review where medication_id=? and review_id = ?",
+                medicationId, reviewId)
                 == 1;
     }
 }

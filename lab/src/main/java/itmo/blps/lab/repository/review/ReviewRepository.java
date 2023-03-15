@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReviewRepository {
     boolean save(Review review, Long medicationId);
+
+    boolean deleteByIdAndMedicationId(Long medicationId, Long reviewId);
 }
