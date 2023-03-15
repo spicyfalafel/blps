@@ -12,3 +12,7 @@ docker:
 
 run-jar-local:
 	java -jar ./target/lab-0.0.1-SNAPSHOT.jar
+
+run-jar-helios:
+	export $(< ~/.env)
+	java -jar blps-lab1.jar
