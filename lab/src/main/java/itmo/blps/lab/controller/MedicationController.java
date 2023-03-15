@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class MedicationController {
@@ -31,9 +33,23 @@ public class MedicationController {
     }
 
     @GetMapping(value = "/api/medication", params = "title")
-    public ResponseEntity<List<Medication>> medicationsByTitle(@RequestParam String title) {
-        List<Medication> lst = medicationCRUDRepository.findByTitleContainingIgnoreCase(title);
-        return new ResponseEntity<>(lst, HttpStatus.OK);
+    public ResponseEntity<List<Medication>> medicationsByTitleContains(@RequestParam Optional<String> title) {
+        if (title.isPresent()){
+            List<Medication> lst = medicationCRUDRepository.findByTitleContainingIgnoreCase(title.get());
+            return new ResponseEntity<>(lst, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(value = "/api/medication", params = "titleStarting")
+    public ResponseEntity<List<Medication>> medicationsByTitleStarting(@RequestParam Optional<String> titleStarting) {
+        if (titleStarting.isPresent()){
+            List<Medication> lst = medicationCRUDRepository.findByTitleStartingWithIgnoreCase(titleStarting.get());
+            return new ResponseEntity<>(lst, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
     }
     @GetMapping("/api/medication/{id}")
     public ResponseEntity<Medication> medicationById(@PathVariable Long id) {

@@ -13,4 +13,5 @@ public interface MedicationCRUDRepository extends CrudRepository<Medication, Lon
     @Query("select medication_id, title from medication")
     List<MedicationIdTitle> findAllReturnTitleAndId();
     List<Medication> findByTitleContainingIgnoreCase(String title);
+    List<Medication> findByTitleStartingWithIgnoreCase(String title);
 }
