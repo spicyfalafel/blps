@@ -1,16 +1,18 @@
 package itmo.blps.lab.entity;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Set;
 
-@Data
 @Table("medication")
 @NoArgsConstructor
+@Getter
+@Setter
 public class Medication {
     @Id
     private Long medicationId;

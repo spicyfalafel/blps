@@ -1,14 +1,16 @@
 package itmo.blps.lab.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("review")
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
 public class Review {
     @Id
     private Long reviewId;
