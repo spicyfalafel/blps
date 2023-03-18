@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReviewService {
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(LabApplication.class);
 
     private final MyReviewRepository myReviewRepository;
     private final ReviewCRUDRepository reviewCRUDRepository;

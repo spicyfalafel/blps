@@ -1,18 +1,14 @@
 package itmo.blps.lab.services;
 
-import ch.qos.logback.classic.Logger;
-import itmo.blps.lab.LabApplication;
 import itmo.blps.lab.dto.Medication;
 import itmo.blps.lab.exception.NoEntityWithSuchIdException;
 import itmo.blps.lab.repository.medication.MedicationCRUDRepository;
 import itmo.blps.lab.repository.medication.MyMedicationRepository;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class MedicationService {
@@ -58,7 +54,7 @@ public class MedicationService {
         if (medicationCRUDRepository.existsById(id)) {
             medicationCRUDRepository.save(medication);
         } else {
-            throw new NoSuchElementException();
+            throw new NoEntityWithSuchIdException("no such medication with id " + id);
         }
     }
 }

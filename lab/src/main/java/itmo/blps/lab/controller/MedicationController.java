@@ -43,7 +43,6 @@ public class MedicationController {
         } else return ok(medicationService.allMedicationsTitleAndId(pageable));
     }
 
-
     @GetMapping("/api/medication/{id}")
     public ResponseEntity<?> medicationById(@PathVariable Long id) {
         return ok(medicationService.getMedicationByIdLimitReviews(id));
