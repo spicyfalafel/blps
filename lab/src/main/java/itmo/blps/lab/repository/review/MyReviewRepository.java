@@ -1,6 +1,6 @@
 package itmo.blps.lab.repository.review;
 
-import itmo.blps.lab.entity.Review;
+import itmo.blps.lab.dto.Review;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,13 +22,6 @@ public class MyReviewRepository implements ReviewRepository {
                 review.getEmail(),
                 review.getReview(),
                 medicationId)
-                == 1;
-    }
-
-    @Override
-    public boolean deleteByIdAndMedicationId(Long medicationId, Long reviewId) {
-    return jdbcTemplate.update( "delete from review where medication_id=? and review_id = ?",
-                medicationId, reviewId)
                 == 1;
     }
 }

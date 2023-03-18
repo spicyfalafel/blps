@@ -1,94 +1,71 @@
 package itmo.blps.lab.controller;
 
-import itmo.blps.lab.entity.Medication;
-import itmo.blps.lab.entity.MedicationIdTitle;
-import itmo.blps.lab.repository.medication.MedicationCRUDRepository;
-import itmo.blps.lab.repository.medication.MyMedicationRepository;
-import itmo.blps.lab.services.MedicationManager;
+import com.fasterxml.jackson.annotation.JsonView;
+import itmo.blps.lab.dto.Medication;
+import itmo.blps.lab.services.MedicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
+@Validated
 public class MedicationController {
-    private final MedicationCRUDRepository medicationCRUDRepository;
-    private final MyMedicationRepository myMedicationRepository;
-    private final MedicationManager medicationManager;
+    private final MedicationService medicationService;
 
     @Autowired
-    public MedicationController(MedicationCRUDRepository medicationCRUDRepository,
-                                MyMedicationRepository myMedicationRepository, MedicationManager medicationManager) {
-        this.medicationCRUDRepository = medicationCRUDRepository;
-        this.myMedicationRepository = myMedicationRepository;
-        this.medicationManager = medicationManager;
+    public MedicationController(MedicationService medicationService) {
+        this.medicationService = medicationService;
     }
 
-    @GetMapping("/api/medication")
-    public ResponseEntity<List<MedicationIdTitle>> allMedicationsTitleAndId() {
-        List<MedicationIdTitle> lst = medicationCRUDRepository.findAllReturnTitleAndId();
-        return new ResponseEntity<>(lst, HttpStatus.OK);
+    @GetMapping(value = "/api/medication")
+    @JsonView(Medication.TitleAndId.class)
+    public ResponseEntity<?> medicationsByTitle(
+            @RequestParam(required = false, name = "title") String title,
+            @RequestParam(required = false, name = "titleStarting") String titleStarting,
+            @RequestParam(required = false, name = "page", defaultValue = "1") @Min(1) Integer page,
+            @RequestParam(required = false, name = "size", defaultValue = "5") @Min(1) @Max(1000) Integer size) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        if (title != null) {
+            return ok(medicationService.medicationsByTitleContains(pageable, title));
+        } else if (titleStarting != null) {
+            return ok(medicationService.medicationsByTitleStarting(pageable, titleStarting));
+        } else return ok(medicationService.allMedicationsTitleAndId(pageable));
     }
 
-    @GetMapping(value = "/api/medication", params = "title")
-    public ResponseEntity<List<Medication>> medicationsByTitleContains(@RequestParam Optional<String> title) {
-        if (title.isPresent()){
-            List<Medication> lst = medicationCRUDRepository.findByTitleContainingIgnoreCase(title.get());
-            return new ResponseEntity<>(lst, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-        }
-    }
-
-    @GetMapping(value = "/api/medication", params = "titleStarting")
-    public ResponseEntity<List<Medication>> medicationsByTitleStarting(@RequestParam Optional<String> titleStarting) {
-        if (titleStarting.isPresent()){
-            List<Medication> lst = medicationCRUDRepository.findByTitleStartingWithIgnoreCase(titleStarting.get());
-            return new ResponseEntity<>(lst, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-        }
-    }
 
     @GetMapping("/api/medication/{id}")
-    public ResponseEntity<Medication> medicationById(@PathVariable Long id) {
-        Medication m = myMedicationRepository.getMedicationByIdLimitReviews(id);
-        if (m == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(m, HttpStatus.OK);
+    public ResponseEntity<?> medicationById(@PathVariable Long id) {
+        return ok(medicationService.getMedicationByIdLimitReviews(id));
     }
-    @PostMapping("/api/medication")
+    @PostMapping(value = "/api/medication", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<Medication> createMedication(@RequestBody Medication medication) {
-        if (medicationManager.validateMedication(medication)){
-            Medication m = medicationCRUDRepository.save(medication);
-            return new ResponseEntity<>(m, HttpStatus.OK);
-        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> createMedication(@Validated(Medication.New.class) @RequestBody  Medication medication) {
+        return ok(medicationService.createMedication(medication));
     }
 
-    @DeleteMapping("/api/medication/{id}")
+    @DeleteMapping(value = "/api/medication/{id}")
     @ResponseBody
-    public ResponseEntity<Medication> deleteMedication(@PathVariable Long id) {
-        if (medicationCRUDRepository.existsById(id)) {
-            medicationCRUDRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> deleteMedication(@PathVariable Long id) {
+        medicationService.deleteMedication(id);
+        return new ResponseEntity<>("deleted medication with id " + id, HttpStatus.OK);
     }
 
     @PutMapping("/api/medication/{id}")
     @ResponseBody
-    public ResponseEntity<Medication> updateMedication(@PathVariable Long id, @RequestBody Medication medication) {
-        if (medicationCRUDRepository.existsById(id)) {
-            medicationCRUDRepository.save(medication);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> updateMedication(@PathVariable Long id,
+                                                       @Validated(Medication.Exist.class) @RequestBody Medication medication) {
+        medicationService.updateMedication(id, medication);
+        return new ResponseEntity<>("saved", HttpStatus.OK);
     }
 }

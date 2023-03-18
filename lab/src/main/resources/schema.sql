@@ -1,7 +1,3 @@
-drop table if exists review;
-drop table if exists "review";
-drop table if exists medication;
-drop table if exists "medication";
 create table if not exists medication (
 	medication_id serial primary key,
 	title text,

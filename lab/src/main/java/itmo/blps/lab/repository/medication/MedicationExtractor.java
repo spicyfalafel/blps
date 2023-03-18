@@ -1,7 +1,7 @@
 package itmo.blps.lab.repository.medication;
 
-import itmo.blps.lab.entity.Medication;
-import itmo.blps.lab.entity.Review;
+import itmo.blps.lab.dto.Medication;
+import itmo.blps.lab.dto.Review;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;

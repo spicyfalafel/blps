@@ -1,6 +1,6 @@
 package itmo.blps.lab.repository.medication;
 
-import itmo.blps.lab.entity.Medication;
+import itmo.blps.lab.dto.Medication;
 import org.springframework.stereotype.Repository;
 
 

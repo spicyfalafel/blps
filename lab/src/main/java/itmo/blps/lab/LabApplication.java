@@ -1,7 +1,7 @@
 package itmo.blps.lab;
 
 import ch.qos.logback.classic.Logger;
-import itmo.blps.lab.entity.Medication;
+import itmo.blps.lab.dto.Medication;
 import itmo.blps.lab.repository.medication.MedicationCRUDRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.SpringVersion;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -25,6 +26,7 @@ public class LabApplication implements CommandLineRunner {
 	private MedicationCRUDRepository medicationRepository;
 	@Override
 	public void run(String... arg0) throws Exception {
+		LOGGER.info("spring version is " + SpringVersion.getVersion());
 		LOGGER.info("@@ save() call...");
 		Medication medication = new Medication("Акт уголь", "Если болит живот",
 				"6 таблеток в день", "Если болит живот", "черный язык",

@@ -1,14 +1,13 @@
 package itmo.blps.lab.repository.medication;
 
-import itmo.blps.lab.entity.Medication;
+import itmo.blps.lab.dto.Medication;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 
 @Repository
 public class MyMedicationRepository implements MedicationRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MyMedicationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
