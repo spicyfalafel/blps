@@ -27,11 +27,6 @@ public class LabApplication implements CommandLineRunner {
 	@Override
 	public void run(String... arg0) throws Exception {
 		LOGGER.info("spring version is " + SpringVersion.getVersion());
-		LOGGER.info("@@ save() call...");
-		Medication medication = new Medication("Акт уголь", "Если болит живот",
-				"6 таблеток в день", "Если болит живот", "черный язык",
-				false, "держать в прохладном месте без солнца не давать детям");
-		medicationRepository.save(medication);
 	}
 	@Bean
 	public Docket productApi() {
