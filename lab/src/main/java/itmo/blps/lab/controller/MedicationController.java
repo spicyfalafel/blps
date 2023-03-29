@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import java.util.List;
+
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -46,7 +48,15 @@ public class MedicationController {
             return ok(medicationService.medicationsByTitleContains(pageable, title));
         } else if (titleStarting != null) {
             return ok(medicationService.medicationsByTitleStarting(pageable, titleStarting));
-        } else return ok(medicationService.allMedicationsTitleAndId(pageable));
+        } else  {
+            List<?> medications = medicationService.allMedicationsTitleAndId(pageable);
+            if (medications.isEmpty()) {
+                return new ResponseEntity<>("zero medications at page " + page, HttpStatus.NOT_FOUND);
+            } else {
+                return ok(medications);
+            }
+        }
+
     }
 
     @GetMapping("/api/medication/{id}")
