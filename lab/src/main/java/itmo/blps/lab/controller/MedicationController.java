@@ -1,8 +1,11 @@
 package itmo.blps.lab.controller;
 
+import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.annotation.JsonView;
+import itmo.blps.lab.LabApplication;
 import itmo.blps.lab.dto.Medication;
 import itmo.blps.lab.services.MedicationService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,14 +31,17 @@ public class MedicationController {
         this.medicationService = medicationService;
     }
 
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(LabApplication.class);
     @GetMapping(value = "/api/medication")
     @JsonView(Medication.TitleAndId.class)
     public ResponseEntity<?> medicationsByTitle(
             @RequestParam(required = false, name = "title") String title,
             @RequestParam(required = false, name = "titleStarting") String titleStarting,
-            @RequestParam(required = false, name = "page", defaultValue = "1") @Min(1) Integer page,
+            @RequestParam(required = false, name = "page", defaultValue = "1") @Min(1) @Max(1000) Integer page,
             @RequestParam(required = false, name = "size", defaultValue = "5") @Min(1) @Max(1000) Integer size) {
         Pageable pageable = PageRequest.of(page-1, size);
+        LOGGER.info("page " + page);
+        LOGGER.info("size " + page);
         if (title != null) {
             return ok(medicationService.medicationsByTitleContains(pageable, title));
         } else if (titleStarting != null) {
@@ -49,7 +55,7 @@ public class MedicationController {
     }
     @PostMapping(value = "/api/medication", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> createMedication(@Validated(Medication.New.class) @RequestBody  Medication medication) {
+    public ResponseEntity<?> createMedication(@Validated(Medication.New.class) @RequestBody Medication medication) {
         return ok(medicationService.createMedication(medication));
     }
 

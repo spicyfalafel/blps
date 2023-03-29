@@ -1,6 +1,8 @@
 package itmo.blps.lab;
 
 import ch.qos.logback.classic.Logger;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import itmo.blps.lab.dto.Medication;
 import itmo.blps.lab.repository.medication.MedicationCRUDRepository;
 import org.slf4j.LoggerFactory;
@@ -24,8 +26,12 @@ public class LabApplication implements CommandLineRunner {
 	}
 	@Autowired
 	private MedicationCRUDRepository medicationRepository;
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	@Override
 	public void run(String... arg0) throws Exception {
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 		LOGGER.info("spring version is " + SpringVersion.getVersion());
 	}
 	@Bean
